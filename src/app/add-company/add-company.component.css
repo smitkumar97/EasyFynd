@@ -1,0 +1,29 @@
+.full-width {
+  width: 100%;
+}
+
+.top-padding {
+  padding-top: 3px;
+}
+
+.margin-left mat-radio-button:not(:first-child) {
+  margin-left: 10px;
+}
+
+.form-container {
+  margin: 2% 25%;
+}
+
+mat-card-header {
+  padding-bottom: 3px;
+}
+
+.skillset {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.error {
+  color: red;
+}

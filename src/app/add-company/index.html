@@ -1,0 +1,92 @@
+<form class="form-container mat-elevation-z8" [formGroup]="myFormData" (ngSubmit)="onSubmit()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Company profile</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col-md-6">
+          <mat-form-field class="full-width">
+            <mat-label>Company Name</mat-label>
+            <input formControlName="companyName" matInput placeholder="Company Name">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+          <mat-form-field class="full-width">
+            <mat-label>Address</mat-label>
+            <textarea formControlName="address" matInput placeholder="Address"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <mat-form-field class="full-width">
+            <mat-label>Email</mat-label>
+            <textarea formControlName="email" matInput placeholder="Email"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+          <mat-form-field class="full-width">
+            <mat-label>Phone</mat-label>
+            <textarea formControlName="phone" matInput placeholder="Phone Number"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 top-padding">
+          <mat-form-field class="full-width" appearance="fill">
+            <mat-label>Created At</mat-label>
+            <input formControlName="createdAt" matInput [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- <div class="row">
+          <div class="col-md-12">
+              <mat-radio-group  formControlName="gender" class="margin-left">
+                <mat-label>Email</mat-label>
+                  <mat-radio-button value="male"> Male </mat-radio-button>
+                  <mat-radio-button value="female"> Female </mat-radio-button>
+              </mat-radio-group>
+          </div>
+      </div> -->
+    </mat-card-content>
+
+    <div class="employee-info-container" formGroupName.formArrayName="empInfo">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Employee profile</mat-card-title>
+      </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col-md-6">
+          <mat-form-field class="full-width">
+            <mat-label>Employee Name</mat-label>
+            <input formGroupName.formControlName="empName" matInput placeholder="Employee Name">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+          <div class="skill-info-container" formGroupName.formArrayName="skillInfo">
+            <!-- <div class="dynamically-add-skill" *ngFor="let skill of skillForms.controls; let i=index" [formGroupName]="i"> -->
+              <mat-form-field class="full-width">
+                <mat-label>Skills</mat-label>
+                <mat-select formControlName="skillName" required>
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let skill of skillArr" [value]="skill">
+                    {{skill}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!-- <button (click)="deleteSkills(i)" mat-raised-button color="warn">Delete</button> -->
+            <!-- </div> -->
+          </div>
+          <button (click)="onSubmit()" mat-raised-button color="primary">Add New Skill</button> &nbsp;
+        </div>
+      </div>
+    </mat-card-content>
+    </mat-card>
+    </div>
+    <mat-card-actions>
+      <button [disabled]="!myFormData.valid" mat-raised-button color="primary">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>
