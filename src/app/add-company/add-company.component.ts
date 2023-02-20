@@ -22,7 +22,6 @@ import {
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
 import { StorageService } from '../services/storage.service';
-import { DataTransferService } from './../services/data-transfer.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 const moment = _rollupMoment || _moment;
 
@@ -59,6 +58,7 @@ export const MY_FORMATS = {
 export class AddCompanyComponent implements OnInit {
   date = new FormControl(moment());
   public formData: FormGroup;
+  public addskillInfoGroup: FormGroup;
   message = 'Form Data Saved Successfully';
   action = 'Done';
   colorControl = new FormControl('primary' as ThemePalette);
@@ -104,7 +104,6 @@ export class AddCompanyComponent implements OnInit {
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
-    private datatransferservice: DataTransferService,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -127,6 +126,15 @@ export class AddCompanyComponent implements OnInit {
       empInfo: this.fb.array([]),
     });
 
+    this.addskillInfoGroup = new FormGroup({
+      skillName: new FormControl(this.skillArr[0], [Validators.required]),
+      skillRating: new FormControl('', [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.max(5),
+        Validators.min(1),
+      ]),
+    });
     if (
       this.editCompanyDetails &&
       Object.keys(this.editCompanyDetails)?.length > 0
@@ -192,30 +200,12 @@ export class AddCompanyComponent implements OnInit {
   private skillInfoGroup(): any {
     if (this.empSkillInfo.length > 0) {
       let newSkillFormGroup = this.empSkillInfo.map((empSkill: any) => {
-        let formGroup = new FormGroup({
-          skillName: new FormControl(this.skillArr[0], [Validators.required]),
-          skillRating: new FormControl('', [
-            Validators.required,
-            Validators.minLength(1),
-            Validators.max(5),
-            Validators.min(1),
-          ]),
-        });
+        let formGroup = this.addskillInfoGroup;
         return formGroup;
       });
       return newSkillFormGroup;
     } else {
-      return [
-        new FormGroup({
-          skillName: new FormControl(this.skillArr[0], [Validators.required]),
-          skillRating: new FormControl('', [
-            Validators.required,
-            Validators.minLength(1),
-            Validators.max(5),
-            Validators.min(1),
-          ]),
-        }),
-      ];
+      return [this.addskillInfoGroup];
     }
   }
 

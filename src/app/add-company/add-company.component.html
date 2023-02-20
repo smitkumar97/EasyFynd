@@ -266,9 +266,16 @@
 
         </div>
         <br>
-        <button mat-raised-button color="accent" type="button" [disabled]="!formData.valid"
+        <button mat-raised-button color="accent" type="button" [disabled]="!formData.valid" [mat-dialog-close]="true"
           (click)="openSnackBar(message, action); onSubmit(); myForm.resetForm()">Submit</button>
+          &nbsp; &nbsp; &nbsp;
+          <button mat-raised-button color="warn" type="button" [mat-dialog-close]="false">Cancel</button>
+          <!-- <button mat-button [mat-dialog-close]="false">Cancel</button> -->
+
       </mat-card-content>
+      <div mat-dialog-actions>
+        <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Yes,Update</button> -->
+      </div>
     </form>
   </mat-card>
 </div>

@@ -77,7 +77,7 @@
     </table>
     <div class="footer">
       <mat-paginator [pageSizeOptions]="[5,10,20]" showFirstLastButtons
-        aria-label="Select page of users"></mat-paginator>
+        aria-label="Select page of users" (page)="onPaginateChange($event)"></mat-paginator>
     </div>
   </div>
 </div>

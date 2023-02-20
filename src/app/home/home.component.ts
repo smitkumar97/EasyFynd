@@ -36,6 +36,7 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   ];
   dataSource: MatTableDataSource<UserData>;
   myFormData: any;
+  customPaginator: any;
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
@@ -61,8 +62,6 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   ngOnInit() {}
 
   applyFilter(event: Event) {
-    console.log(this.sort);
-
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -71,11 +70,26 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     }
   }
 
-  editCompanyDetails(row: any, index: any) {
-    let newCompanyData = JSON.parse(localStorage.getItem('formData') || '');
-    newCompanyData.splice(index, 1);
+  onPaginateChange(event: any) {
+    this.customPaginator = event
+  }
+
+  removeAndUpdateRecord(index: any) {
+    let updatedIndex = index;
+    if (this.customPaginator && Object.keys(this.customPaginator)?.length) {
+      updatedIndex = this.customPaginator.pageIndex * this.customPaginator.pageSize + updatedIndex;
+    }
+    let newCompanyData = JSON.parse(
+      localStorage.getItem('formData') || ''
+    );
+    newCompanyData.splice(updatedIndex, 1);
     localStorage.clear();
     this.storageservice.saveData('formData', newCompanyData);
+    this.myFormData = this.storageservice.getData('formData');
+    this.dataSource = new MatTableDataSource(this.myFormData);
+    this.ngAfterViewInit();
+  }
+  editCompanyDetails(row: any, index: any) {
     this.dialog
       .open(AddCompanyComponent, {
         data: row,
@@ -84,12 +98,13 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
       })
       .afterClosed()
       .subscribe((result) => {
-        if (!result) {
-          this.myFormData = this.storageservice.getData('formData');
-          this.dataSource = new MatTableDataSource(this.myFormData);
-          this.ngAfterViewInit();
+        if (result) {
+          this.removeAndUpdateRecord(index);
+        } else {
+          return;
         }
-      });
+      })
+      return;
   }
 
   deleteCompanyDetails(index: any) {
@@ -98,16 +113,7 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          let newCompanyData = JSON.parse(
-            localStorage.getItem('formData') || ''
-          );
-          newCompanyData.splice(index, 1);
-          localStorage.clear();
-          this.storageservice.saveData('formData', newCompanyData);
-          console.log('Record removed from table');
-          this.myFormData = this.storageservice.getData('formData');
-          this.dataSource = new MatTableDataSource(this.myFormData);
-          this.ngAfterViewInit();
+          this.removeAndUpdateRecord(index);
         }
       });
   }
