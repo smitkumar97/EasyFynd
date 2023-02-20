@@ -1,6 +1,6 @@
 <div class="add-company-wrapper">
   <mat-card>
-    <form class="form-container mat-elevation-z8" [formGroup]="formData">
+    <form class="form-container mat-elevation-z8" #myForm="ngForm" [formGroup]="formData">
       <mat-card-header>
         <mat-card-title>Company Details</mat-card-title>
       </mat-card-header>
@@ -263,10 +263,11 @@
               </div>
             </div>
           </div>
+
         </div>
         <br>
         <button mat-raised-button color="accent" type="button" [disabled]="!formData.valid"
-          (click)="openSnackBar(message, action); onSubmit()">Submit</button>
+          (click)="openSnackBar(message, action); onSubmit(); myForm.resetForm()">Submit</button>
       </mat-card-content>
     </form>
   </mat-card>

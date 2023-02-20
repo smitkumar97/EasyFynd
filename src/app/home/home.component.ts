@@ -50,6 +50,10 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   }
 
   ngAfterViewInit() {
+    this.myFormData = this.myFormData.map((ob: any, index: any) => {
+      return { ...ob, id: index + 1 };
+    });
+    this.dataSource = new MatTableDataSource(this.myFormData);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -57,6 +61,8 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   ngOnInit() {}
 
   applyFilter(event: Event) {
+    console.log(this.sort);
+
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -65,12 +71,25 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     }
   }
 
-  editCompanyDetails(row: any) {
-    this.dialog.open(AddCompanyComponent, {
-      data: row,
-      width: '50vw',
-      height: '90vh',
-    });
+  editCompanyDetails(row: any, index: any) {
+    let newCompanyData = JSON.parse(localStorage.getItem('formData') || '');
+    newCompanyData.splice(index, 1);
+    localStorage.clear();
+    this.storageservice.saveData('formData', newCompanyData);
+    this.dialog
+      .open(AddCompanyComponent, {
+        data: row,
+        width: '50vw',
+        height: '90vh',
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) {
+          this.myFormData = this.storageservice.getData('formData');
+          this.dataSource = new MatTableDataSource(this.myFormData);
+          this.ngAfterViewInit();
+        }
+      });
   }
 
   deleteCompanyDetails(index: any) {

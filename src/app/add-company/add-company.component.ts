@@ -4,6 +4,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  NgForm,
   Validators,
 } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
@@ -96,7 +97,8 @@ export class AddCompanyComponent implements OnInit {
     'PM',
     'Cloud Specialist',
   ];
-
+  empSkillInfo = [];
+  empEduInfo = [];
   constructor(
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
@@ -123,7 +125,14 @@ export class AddCompanyComponent implements OnInit {
       createdAt: new FormControl(new Date()),
       empInfo: this.fb.array([]),
     });
-    console.log(this.editCompanyDetails);
+
+    if (
+      this.editCompanyDetails &&
+      Object.keys(this.editCompanyDetails)?.length > 0
+    ) {
+      this.empSkillInfo = this.editCompanyDetails['empInfo'][0]['skillInfo'];
+      this.empEduInfo = this.editCompanyDetails['empInfo'][0]['educationInfo'];
+    }
   }
   ngOnInit(): void {
     this.addEmployee();
@@ -149,58 +158,10 @@ export class AddCompanyComponent implements OnInit {
     this.formData.controls['createdAt'].setValue(
       this.editCompanyDetails.createdAt
     );
-    // let modalDataContainer = [];
-    // modalDataContainer.push(this.editCompanyDetails);
-    // for (const empInfo in modalDataContainer) {
-    //   console.log('empInfo', empInfo);
-    // }
-    // this.patchControls(modalDataContainer);
-    // this.formData.controls['empInfo']['empName'].setValue(this.editCompanyDetails.empInfo[0])
+    this.formData.controls['empInfo'].patchValue(
+      this.editCompanyDetails.empInfo
+    );
   }
-
-  // setEmployeeValues(data: any) {
-  //   console.log('contacts', data);
-  //    const formArray = [];
-
-  //    for(let empInfo of data){
-  //      formArray.push(
-  //        this.fb.group({
-  //         empName: [empInfo.empName],
-  //          designation: [empInfo.designation],
-  //          joiningDate: [empInfo.joiningDate],
-  //          empEmail: [empInfo.empEmail],
-  //          empPhone: [empInfo.empPhone],
-  //       })
-  //     );
-  //    }
-  //   return formArray;
-  //  }
-
-  //  createAgreementsGroup(empInfo: any) {
-  //   return this.fb.group({
-  //     empName: [empInfo.empName],
-  //     designation: [empInfo.designation],
-  //     joiningDate: [empInfo.joiningDate],
-  //     empEmail: [empInfo.empEmail],
-  //     empPhone: [empInfo.empPhone],
-  //     skills: this.fb.array(this.setEmployeeValues(empInfo))
-  //   });
-  // }
-
-  //  patchControls(data2: any) {
-  //   const control = <FormArray>this.formData.get('empInfo');
-  //   console.log(control.value);
-
-  //   return
-  //   // const control2 = <FormArray>this.mainForm.get('contacts');
-  //   console.log('form here', this.formData.controls['empInfo']);
-  //   for (const obj of data2) {
-  //     const addrCtrl = this.createAgreementsGroup(obj);
-  //     control.push(addrCtrl);
-  //     // console.log(this.mainForm.value);
-  //   }
-  //   //  console.log('patched here',this.mainForm)
-  // }
   private employeeInfoGroup(): FormGroup {
     return new FormGroup({
       empName: new FormControl('', [
@@ -219,35 +180,73 @@ export class AddCompanyComponent implements OnInit {
         Validators.maxLength(15),
         Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
       ]),
-      skillInfo: new FormArray([this.skillInfoGroup()]),
-      educationInfo: new FormArray([this.educationInfoGroup()]),
+      skillInfo: new FormArray([...this.skillInfoGroup()]),
+      educationInfo: new FormArray([...this.educationInfoGroup()]),
     });
   }
 
-  private skillInfoGroup(): FormGroup {
-    return new FormGroup({
-      skillName: new FormControl(this.skillArr[0], [Validators.required]),
-      skillRating: new FormControl('', [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.max(5),
-        Validators.min(1),
-      ]),
-    });
+  private skillInfoGroup(): any {
+    if (this.empSkillInfo.length > 0) {
+      let newSkillFormGroup = this.empSkillInfo.map((empSkill: any) => {
+        let formGroup = new FormGroup({
+          skillName: new FormControl(this.skillArr[0], [Validators.required]),
+          skillRating: new FormControl('', [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.max(5),
+            Validators.min(1),
+          ]),
+        });
+        return formGroup;
+      });
+      return newSkillFormGroup;
+    } else {
+      return [
+        new FormGroup({
+          skillName: new FormControl(this.skillArr[0], [Validators.required]),
+          skillRating: new FormControl('', [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.max(5),
+            Validators.min(1),
+          ]),
+        }),
+      ];
+    }
   }
 
-  private educationInfoGroup(): FormGroup {
-    return new FormGroup({
-      instituteName: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(50),
-      ]),
-      course: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(25),
-      ]),
-      graduationYear: new FormControl('', [Validators.required]),
-    });
+  private educationInfoGroup(): any {
+    if (this.empEduInfo.length > 0) {
+      let newEduFormGroup = this.empEduInfo.map((empEdu: any) => {
+        let formGroup = new FormGroup({
+          instituteName: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(50),
+          ]),
+          course: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(25),
+          ]),
+          graduationYear: new FormControl('', [Validators.required]),
+        });
+        return formGroup;
+      });
+      return newEduFormGroup;
+    } else {
+      return [
+        new FormGroup({
+          instituteName: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(50),
+          ]),
+          course: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(25),
+          ]),
+          graduationYear: new FormControl('', [Validators.required]),
+        }),
+      ];
+    }
   }
 
   employeesInfo(): FormArray {
@@ -271,11 +270,33 @@ export class AddCompanyComponent implements OnInit {
   }
 
   addEmployeeSkill(empIndex: number) {
-    this.employeeSkills(empIndex).push(this.skillInfoGroup());
+    this.employeeSkills(empIndex).push(
+      new FormGroup({
+        skillName: new FormControl(this.skillArr[0], [Validators.required]),
+        skillRating: new FormControl('', [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.max(5),
+          Validators.min(1),
+        ]),
+      })
+    );
   }
 
   addEmployeeEdu(empIndex: number) {
-    this.employeeeEducation(empIndex).push(this.educationInfoGroup());
+    this.employeeeEducation(empIndex).push(
+      new FormGroup({
+        instituteName: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(50),
+        ]),
+        course: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(25),
+        ]),
+        graduationYear: new FormControl('', [Validators.required]),
+      })
+    );
   }
 
   removeEmployeeSkill(empIndex: number, skillIndex: number) {
@@ -290,7 +311,6 @@ export class AddCompanyComponent implements OnInit {
     this.companyFormData = this.storageservice.getData('formData');
     this.companyFormData.push(this.formData.value);
     this.storageservice.saveData('formData', this.companyFormData);
-    this.formData.reset();
   }
 
   openSnackBar(message: string, action: string) {
