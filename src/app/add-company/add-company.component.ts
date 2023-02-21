@@ -25,7 +25,11 @@ import {
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
 import { StorageService } from '../services/storage.service';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
@@ -56,12 +60,14 @@ export const MY_FORMATS = {
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
     // { provide: MdDialogRef, useValue: {} }, --> deprecated
     // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
+    {provide: MatDialogRef, useValue: {}},
+    // {provide: MAT_DIALOG_DATA, useValue: []},
   ],
 })
 export class AddCompanyComponent implements OnInit {
   date = new FormControl(moment());
   public formData: FormGroup;
-  public addskillInfoGroup: FormGroup;
+  // public addskillInfoGroup: FormGroup;
   message = 'Form Data Saved Successfully';
   action = 'Done';
   colorControl = new FormControl('primary' as ThemePalette);
@@ -101,12 +107,15 @@ export class AddCompanyComponent implements OnInit {
     'PM',
     'Cloud Specialist',
   ];
+
+  employeesInfoGroup = [];
   empSkillInfo = [];
   empEduInfo = [];
   constructor(
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
+    private dialog: MatDialogRef<any, any>,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -126,28 +135,20 @@ export class AddCompanyComponent implements OnInit {
         Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
       ]),
       createdAt: new FormControl(new Date()),
-      empInfo: this.fb.array([]),
-    });
-
-    this.addskillInfoGroup = new FormGroup({
-      skillName: new FormControl(this.skillArr[0], [Validators.required]),
-      skillRating: new FormControl('', [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.max(5),
-        Validators.min(1),
-      ]),
+      empInfo: new FormArray([]),
     });
     if (
       this.editCompanyDetails &&
       Object.keys(this.editCompanyDetails)?.length > 0
     ) {
+      this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
       this.empSkillInfo = this.editCompanyDetails['empInfo'][0]['skillInfo'];
       this.empEduInfo = this.editCompanyDetails['empInfo'][0]['educationInfo'];
     }
   }
   ngOnInit(): void {
-    this.addEmployee();
+    // this.addEmployee();
+    this.loadEmployee();
     this.employeesInfo();
     if (
       this.editCompanyDetails &&
@@ -159,7 +160,6 @@ export class AddCompanyComponent implements OnInit {
       this.setValues();
     }
   }
-
   // errorHandler(empIndex: any, error: any) {
   //   return this.employeesInfo().controls[empIndex].get('empName')?.touched && this.employeesInfo().controls[empIndex].get('empName')?.errors && this.employeesInfo().controls[empIndex].get('empName')?.hasError(error)
   // }
@@ -177,38 +177,93 @@ export class AddCompanyComponent implements OnInit {
       this.editCompanyDetails.empInfo
     );
   }
-  private employeeInfoGroup(): FormGroup {
-    return new FormGroup({
-      empName: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(25),
-      ]),
-      designation: new FormControl(this.designationArr[0]),
-      joiningDate: new FormControl('', [Validators.required]),
-      empEmail: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(100),
-        Validators.email,
-      ]),
-      empPhone: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(15),
-        Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
-      ]),
-      skillInfo: new FormArray([...this.skillInfoGroup()]),
-      educationInfo: new FormArray([...this.educationInfoGroup()]),
-    });
+  private employeeInfoGroup(): any {
+    if (
+      this.editCompanyDetails &&
+      Object.keys(this.editCompanyDetails)?.length > 0
+    ) {
+      this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
+    }
+    if (this.employeesInfoGroup.length > 0) {
+      let newEmployeeInfoFormGroup = this.employeesInfoGroup.map(
+        (empInfo: any) => {
+          let formGroup = new FormGroup({
+            empName: new FormControl('', [
+              Validators.required,
+              Validators.maxLength(25),
+            ]),
+            designation: new FormControl(this.designationArr[0]),
+            joiningDate: new FormControl('', [Validators.required]),
+            empEmail: new FormControl('', [
+              Validators.required,
+              Validators.maxLength(100),
+              Validators.email,
+            ]),
+            empPhone: new FormControl('', [
+              Validators.required,
+              Validators.maxLength(15),
+              Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+            ]),
+            skillInfo: new FormArray([...this.skillInfoGroup()]),
+            educationInfo: new FormArray([...this.educationInfoGroup()]),
+          });
+          return formGroup;
+        }
+      );
+      return newEmployeeInfoFormGroup;
+    } else {
+      [
+        new FormGroup({
+          empName: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(25),
+          ]),
+          designation: new FormControl(this.designationArr[0]),
+          joiningDate: new FormControl('', [Validators.required]),
+          empEmail: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(100),
+            Validators.email,
+          ]),
+          empPhone: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(15),
+            Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+          ]),
+          skillInfo: new FormArray([...this.skillInfoGroup()]),
+          educationInfo: new FormArray([...this.educationInfoGroup()]),
+        }),
+      ];
+    }
   }
 
   private skillInfoGroup(): any {
     if (this.empSkillInfo.length > 0) {
       let newSkillFormGroup = this.empSkillInfo.map((empSkill: any) => {
-        let formGroup = this.addskillInfoGroup;
+        let formGroup = new FormGroup({
+          skillName: new FormControl(this.skillArr[0], [Validators.required]),
+          skillRating: new FormControl('', [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.max(5),
+            Validators.min(1),
+          ]),
+        });
         return formGroup;
       });
       return newSkillFormGroup;
     } else {
-      return [this.addskillInfoGroup];
+      return [
+        new FormGroup({
+          skillName: new FormControl(this.skillArr[0], [Validators.required]),
+          skillRating: new FormControl('', [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.max(5),
+            Validators.min(1),
+          ]),
+        }),
+      ];
     }
   }
 
@@ -250,8 +305,46 @@ export class AddCompanyComponent implements OnInit {
     return this.formData.get('empInfo') as FormArray;
   }
 
+  loadEmployee() {
+    console.log(this.employeeInfoGroup());
+    let empGroup: any = [];
+
+    if (this.employeeInfoGroup()) {
+      empGroup = [...this.employeeInfoGroup()];
+    }
+
+    if (empGroup.length === 0) {
+      this.addEmployee();
+    } else {
+      empGroup.map((s: any) => {
+        this.employeesInfo().push(s);
+      });
+    }
+  }
+
   addEmployee() {
-    this.employeesInfo().push(this.employeeInfoGroup());
+    this.employeesInfo().push(
+      new FormGroup({
+        empName: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(25),
+        ]),
+        designation: new FormControl(this.designationArr[0]),
+        joiningDate: new FormControl('', [Validators.required]),
+        empEmail: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(100),
+          Validators.email,
+        ]),
+        empPhone: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(15),
+          Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+        ]),
+        skillInfo: new FormArray([...this.skillInfoGroup()]),
+        educationInfo: new FormArray([...this.educationInfoGroup()]),
+      })
+    );
   }
 
   removeEmployee(empIndex: number) {
@@ -314,5 +407,13 @@ export class AddCompanyComponent implements OnInit {
     this._snackBar.open(message, action, {
       duration: 2000,
     });
+  }
+
+  onCloseConfirm() {
+    this.dialog.close(true);
+  }
+
+  onCloseReject() {
+    this.dialog.close(false);
   }
 }

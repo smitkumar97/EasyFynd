@@ -77,6 +77,9 @@
           <div class="employee-info-container" formArrayName="empInfo">
             <mat-card-header>
               <mat-card-title>Employee Details</mat-card-title>
+              <button mat-raised-button color="primary" style="margin-left: 1rem;" (click)="addEmployee()">
+                Add Employee
+              </button>
             </mat-card-header>
             <div *ngFor="let employee of employeesInfo().controls; let empIndex=index">
               <div [formGroupName]="empIndex">
@@ -174,7 +177,7 @@
                               </mat-option>
                             </mat-select>
                             <mat-error class="error"
-                              *ngIf="employeeSkills(empIndex).controls[empIndex].get('skillName')?.touched && employeeSkills(empIndex).controls[empIndex].get('skillName')?.errors && employeeSkills(empIndex).controls[empIndex].get('skillName')?.hasError('required')">
+                              *ngIf="employeeSkills(empIndex).controls[skillIndex].get('skillName')?.touched && employeeSkills(empIndex).controls[skillIndex].get('skillName')?.errors && employeeSkills(empIndex).controls[skillIndex].get('skillName')?.hasError('required')">
                               Skill is required
                             </mat-error>
                           </mat-form-field>
@@ -184,25 +187,28 @@
                             <mat-label>Rating</mat-label>
                             <input type="number" formControlName="skillRating" matInput placeholder="" maxlength="1">
                             <mat-error class="error"
-                              *ngIf="employeeSkills(empIndex).controls[empIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.hasError('required')">
+                              *ngIf="employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.hasError('required')">
                               Rating is required
                             </mat-error>
 
                             <mat-error class="error"
-                              *ngIf="employeeSkills(empIndex).controls[empIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.hasError('min')">
+                              *ngIf="employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.hasError('min')">
                               Rating must be between 1 to 5
                             </mat-error>
                             <mat-error class="error"
-                              *ngIf="employeeSkills(empIndex).controls[empIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[empIndex].get('skillRating')?.hasError('max')">
+                              *ngIf="employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.touched && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.errors && employeeSkills(empIndex).controls[skillIndex].get('skillRating')?.hasError('max')">
                               Rating must be between 1 to 5
                             </mat-error>
                           </mat-form-field>
                         </div>
                       </div>
                     </div>
+                    <button mat-raised-button color="warn" (click)="removeEmployeeSkill(empIndex,skillIndex)">
+                      <mat-icon aria-hidden="false" aria-label="Example remove icon" fontIcon="remove">remove</mat-icon>
+                    </button>
                   </div>
                 </div>
-                <button mat-raised-button color="primary" (click)="addEmployeeSkill(empIndex)">
+                <button class="add-button" mat-raised-button color="primary" (click)="addEmployeeSkill(empIndex)">
                   <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
                 </button>
 
@@ -218,11 +224,11 @@
                             <mat-label>Institute Name</mat-label>
                             <input type="text" formControlName="instituteName" matInput placeholder="Ex. IIT Bomaby">
                             <mat-error class="error"
-                              *ngIf="employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.touched && employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.errors && employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.hasError('required')">
+                              *ngIf="employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.touched && employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.errors && employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.hasError('required')">
                               Institute name is required
                             </mat-error>
                             <mat-error class="error"
-                              *ngIf="employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.touched && employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.errors && employeeeEducation(empIndex).controls[empIndex].get('instituteName')?.hasError('maxlength')">
+                              *ngIf="employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.touched && employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.errors && employeeeEducation(empIndex).controls[eduIndex].get('instituteName')?.hasError('maxlength')">
                               Institute name can be max 50 characters long
                             </mat-error>
                           </mat-form-field>
@@ -232,11 +238,11 @@
                             <mat-label>Course</mat-label>
                             <input type="text" formControlName="course" matInput placeholder="">
                             <mat-error class="error"
-                              *ngIf="employeeeEducation(empIndex).controls[empIndex].get('course')?.touched && employeeeEducation(empIndex).controls[empIndex].get('course')?.errors && employeeeEducation(empIndex).controls[empIndex].get('course')?.hasError('required')">
+                              *ngIf="employeeeEducation(empIndex).controls[eduIndex].get('course')?.touched && employeeeEducation(empIndex).controls[eduIndex].get('course')?.errors && employeeeEducation(empIndex).controls[eduIndex].get('course')?.hasError('required')">
                               Course name is required
                             </mat-error>
                             <mat-error class="error"
-                              *ngIf="employeeeEducation(empIndex).controls[empIndex].get('course')?.touched && employeeeEducation(empIndex).controls[empIndex].get('course')?.errors && employeeeEducation(empIndex).controls[empIndex].get('course')?.hasError('maxlength')">
+                              *ngIf="employeeeEducation(empIndex).controls[eduIndex].get('course')?.touched && employeeeEducation(empIndex).controls[eduIndex].get('course')?.errors && employeeeEducation(empIndex).controls[eduIndex].get('course')?.hasError('maxlength')">
                               Course name can be max 25 characters long
                             </mat-error>
                           </mat-form-field>
@@ -246,7 +252,7 @@
                             <mat-label>Graduated At</mat-label>
                             <input formControlName="graduationYear" matInput [matDatepicker]="pickerr">
                             <mat-error class="error"
-                              *ngIf="employeeeEducation(empIndex).controls[empIndex].get('graduationYear')?.touched && employeeeEducation(empIndex).controls[empIndex].get('graduationYear')?.errors && employeeeEducation(empIndex).controls[empIndex].get('graduationYear')?.hasError('required')">
+                              *ngIf="employeeeEducation(empIndex).controls[eduIndex].get('graduationYear')?.touched && employeeeEducation(empIndex).controls[eduIndex].get('graduationYear')?.errors && employeeeEducation(empIndex).controls[eduIndex].get('graduationYear')?.hasError('required')">
                               Gratuation date is required
                             </mat-error>
                             <mat-datepicker-toggle matSuffix [for]="pickerr"></mat-datepicker-toggle>
@@ -255,22 +261,31 @@
                         </div>
                       </div>
                     </div>
+                    <button mat-raised-button color="warn" style="margin-bottom: 1rem;"
+                      (click)="removeEmployeeEdu(empIndex,eduIndex)">
+                      <mat-icon aria-hidden="false" aria-label="Example remove icon" fontIcon="remove">remove</mat-icon>
+                    </button>
                   </div>
                 </div>
-                <button mat-raised-button color="primary" (click)="addEmployeeEdu(empIndex)">
+                <button class="add-button" mat-raised-button color="primary" (click)="addEmployeeEdu(empIndex)">
                   <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
                 </button>
               </div>
+              <button mat-raised-button color="warn" style="margin-top: 1rem; margin-bottom: 1rem;"
+                (click)="removeEmployee(empIndex)">
+                Remove Employee {{empIndex + 1}}
+              </button>
             </div>
           </div>
-
         </div>
         <br>
-        <button mat-raised-button color="accent" type="button" [disabled]="!formData.valid" [mat-dialog-close]="true"
-          (click)="openSnackBar(message, action); onSubmit(); myForm.resetForm()">Submit</button>
+        <div class="row" style="margin-bottom: 1rem;">
+          <button mat-raised-button color="accent" type="button" [disabled]="!formData.valid"
+            (click)="openSnackBar(message, action); onSubmit(); myForm.resetForm(); onCloseConfirm()">Submit</button>
           &nbsp; &nbsp; &nbsp;
-          <button mat-raised-button color="warn" type="button" [mat-dialog-close]="false">Cancel</button>
+          <button mat-raised-button color="warn" type="button" (click)="onCloseReject()">Cancel</button>
           <!-- <button mat-button [mat-dialog-close]="false">Cancel</button> -->
+        </div>
 
       </mat-card-content>
       <div mat-dialog-actions>
