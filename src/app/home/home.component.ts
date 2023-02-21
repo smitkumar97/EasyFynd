@@ -71,17 +71,17 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   }
 
   onPaginateChange(event: any) {
-    this.customPaginator = event
+    this.customPaginator = event;
   }
 
   removeAndUpdateRecord(index: any) {
     let updatedIndex = index;
     if (this.customPaginator && Object.keys(this.customPaginator)?.length) {
-      updatedIndex = this.customPaginator.pageIndex * this.customPaginator.pageSize + updatedIndex;
+      updatedIndex =
+        this.customPaginator.pageIndex * this.customPaginator.pageSize +
+        updatedIndex;
     }
-    let newCompanyData = JSON.parse(
-      localStorage.getItem('formData') || ''
-    );
+    let newCompanyData = JSON.parse(localStorage.getItem('formData') || '');
     newCompanyData.splice(updatedIndex, 1);
     localStorage.clear();
     this.storageservice.saveData('formData', newCompanyData);
@@ -103,8 +103,8 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
         } else {
           return;
         }
-      })
-      return;
+      });
+    return;
   }
 
   deleteCompanyDetails(index: any) {

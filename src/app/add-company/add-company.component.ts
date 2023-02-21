@@ -9,7 +9,10 @@ import {
 } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDatepicker } from '@angular/material/datepicker';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBar } from '@angular/material/snack-bar';
+import {
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBar,
+} from '@angular/material/snack-bar';
 import {
   MomentDateAdapter,
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
@@ -50,7 +53,7 @@ export const MY_FORMATS = {
     },
 
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2000}}
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
     // { provide: MdDialogRef, useValue: {} }, --> deprecated
     // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
   ],
@@ -309,7 +312,7 @@ export class AddCompanyComponent implements OnInit {
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
-      duration: 2000
-    })
+      duration: 2000,
+    });
   }
 }
