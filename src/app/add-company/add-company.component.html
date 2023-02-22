@@ -680,6 +680,7 @@
           </button>
           &nbsp; &nbsp; &nbsp;
           <button
+            [disabled]="dialogClose"
             mat-raised-button
             color="warn"
             type="button"
@@ -687,11 +688,10 @@
           >
             Cancel
           </button>
-          <!-- <button mat-button [mat-dialog-close]="false">Cancel</button> -->
         </div>
       </mat-card-content>
       <div mat-dialog-actions>
-        <!-- <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Yes,Update</button> -->
+        <button mat-button  [mat-dialog-close]="true" cdkFocusInitial>Yes,Update</button>
       </div>
     </form>
   </mat-card>

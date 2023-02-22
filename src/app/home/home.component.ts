@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MaterialModule } from '../shared/material/material.module';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -41,10 +41,11 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
+  @Input('mat-dialog-close') dialogResult: any
 
   constructor(
     private storageservice: StorageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     // Assign the data to the data source for the table to render
     this.myFormData = this.storageservice.getData('formData');
@@ -98,8 +99,6 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
       })
       .afterClosed()
       .subscribe((result) => {
-        console.log(result);
-        return;
         if (result) {
           this.removeAndUpdateRecord(index);
         } else {

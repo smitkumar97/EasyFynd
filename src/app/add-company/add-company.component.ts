@@ -30,6 +30,7 @@ import {
   MatDialog,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { HomeComponent } from '../home/home.component';
 const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
@@ -64,7 +65,7 @@ const dialogMock = {
     // { provide: MdDialogRef, useValue: {} }, --> deprecated
     // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
     { provide: MatDialogRef, useValue: [] },
-    // {provide: MAT_DIALOG_DATA, useValue: []},
+    // { provide: MAT_DIALOG_DATA, useValue: []},
   ],
 })
 export class AddCompanyComponent implements OnInit {
@@ -114,11 +115,12 @@ export class AddCompanyComponent implements OnInit {
   employeesInfoGroup = [];
   empSkillInfo = [];
   empEduInfo = [];
+  dialogClose = true;
   constructor(
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
-    private dialogRef: MatDialogRef<AddCompanyComponent>,
+    private dialogRef: MatDialogRef<any,any>,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -146,6 +148,7 @@ export class AddCompanyComponent implements OnInit {
       this.editCompanyDetails &&
       Object.keys(this.editCompanyDetails)?.length > 0
     ) {
+      this.dialogClose = false;
       this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
         this.empSkillInfo = this.editCompanyDetails['empInfo'][i]['skillInfo'];
