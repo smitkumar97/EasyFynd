@@ -75,6 +75,14 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     this.customPaginator = event;
   }
 
+  openCompanyFormDialog () {
+    this.dialog
+    .open(AddCompanyComponent, {
+      width: '50vw',
+      height: '90vh',
+    })
+  }
+
   removeAndUpdateRecord(index: any) {
     let updatedIndex = index;
     if (this.customPaginator && Object.keys(this.customPaginator)?.length) {

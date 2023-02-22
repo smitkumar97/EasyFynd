@@ -27,10 +27,8 @@ import { default as _rollupMoment } from 'moment';
 import { StorageService } from '../services/storage.service';
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { HomeComponent } from '../home/home.component';
 const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
@@ -43,9 +41,6 @@ export const MY_FORMATS = {
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY',
   },
-};
-const dialogMock = {
-  close: () => {},
 };
 
 @Component({
@@ -64,7 +59,7 @@ const dialogMock = {
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
     // { provide: MdDialogRef, useValue: {} }, --> deprecated
     // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
-    { provide: MatDialogRef, useValue: [] },
+    // { provide: MatDialogRef, useValue: [] },
     // { provide: MAT_DIALOG_DATA, useValue: []},
   ],
 })
@@ -113,8 +108,8 @@ export class AddCompanyComponent implements OnInit {
   ];
 
   employeesInfoGroup = [];
-  empSkillInfo = [];
-  empEduInfo = [];
+  empSkillInfo: any = [];
+  empEduInfo: any = [];
   dialogClose = true;
   constructor(
     private fb: FormBuilder,
@@ -151,11 +146,10 @@ export class AddCompanyComponent implements OnInit {
       this.dialogClose = false;
       this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
-        this.empSkillInfo = this.editCompanyDetails['empInfo'][i]['skillInfo'];
+        this.empSkillInfo.push(this.editCompanyDetails['empInfo'][i]['skillInfo']);
       }
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
-        this.empSkillInfo =
-          this.editCompanyDetails['empInfo'][i]['educationInfo'];
+        this.empEduInfo.push(this.editCompanyDetails['empInfo'][i]['educationInfo'])
       }
     }
     this.loadEmployee();
@@ -196,7 +190,7 @@ export class AddCompanyComponent implements OnInit {
     }
     if (this.employeesInfoGroup.length > 0) {
       let newEmployeeInfoFormGroup = this.employeesInfoGroup.map(
-        (empInfo: any) => {
+        (empInfo: any, index: any) => {
           let formGroup = new FormGroup({
             empName: new FormControl('', [
               Validators.required,
@@ -214,8 +208,8 @@ export class AddCompanyComponent implements OnInit {
               Validators.maxLength(15),
               Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
             ]),
-            skillInfo: new FormArray([...this.skillInfoGroup()]),
-            educationInfo: new FormArray([...this.educationInfoGroup()]),
+            skillInfo: new FormArray([...this.skillInfoGroup(index)]),
+            educationInfo: new FormArray([...this.educationInfoGroup(index)]),
           });
           return formGroup;
         }
@@ -247,9 +241,11 @@ export class AddCompanyComponent implements OnInit {
     }
   }
 
-  private skillInfoGroup(): any {
+  private skillInfoGroup(index=0): any {
+    console.log(this.empSkillInfo);
+
     if (this.empSkillInfo.length > 0) {
-      let newSkillFormGroup = this.empSkillInfo.map((empSkill: any) => {
+      let newSkillFormGroup = this.empSkillInfo[index].map((empSkill: any) => {
         let formGroup = new FormGroup({
           skillName: new FormControl(this.skillArr[0], [Validators.required]),
           skillRating: new FormControl('', [
@@ -277,9 +273,9 @@ export class AddCompanyComponent implements OnInit {
     }
   }
 
-  private educationInfoGroup(): any {
+  private educationInfoGroup(index=0): any {
     if (this.empEduInfo.length > 0) {
-      let newEduFormGroup = this.empEduInfo.map((empEdu: any) => {
+      let newEduFormGroup = this.empEduInfo[index].map((empEdu: any) => {
         let formGroup = new FormGroup({
           instituteName: new FormControl('', [
             Validators.required,
@@ -317,9 +313,11 @@ export class AddCompanyComponent implements OnInit {
 
   loadEmployee() {
     let empGroup: any = [];
+    let isEmpGroup = this.employeeInfoGroup();
+    if (isEmpGroup) {
+      console.log('Load Employee');
 
-    if (this.employeeInfoGroup()) {
-      empGroup = [...this.employeeInfoGroup()];
+      empGroup = [...isEmpGroup];
     }
 
     if (empGroup.length === 0) {
@@ -419,20 +417,20 @@ export class AddCompanyComponent implements OnInit {
   }
 
   onCloseConfirm() {
-    if (
-      this.editCompanyDetails &&
-      Object.keys(this.editCompanyDetails)?.length > 0
-    ) {
-      this.dialogRef.close(true);
-    }
+    this.dialogRef.close(true);
+    // if (
+    //   this.editCompanyDetails &&
+    //   Object.keys(this.editCompanyDetails)?.length > 0
+    // ) {
+    // }
   }
 
   onCloseReject() {
-    if (
-      this.editCompanyDetails &&
-      Object.keys(this.editCompanyDetails)?.length > 0
-    ) {
-      this.dialogRef.close(false);
-    }
+    this.dialogRef.close(false);
+    // if (
+    //   this.editCompanyDetails &&
+    //   Object.keys(this.editCompanyDetails)?.length > 0
+    // ) {
+    // }
   }
 }

@@ -33,11 +33,9 @@
         >Company List</a
       >
       <a
-        mat-list-item
-        href="/addcompany"
-        class="nav-link"
-        routerLink="addcompany"
-        >New Company</a
+      mat-list-item
+      (click)="openCompanyFormDialog()"
+    >New Company</a
       >
     </mat-nav-list>
   </mat-sidenav>
