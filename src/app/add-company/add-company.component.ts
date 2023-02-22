@@ -43,6 +43,9 @@ export const MY_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
+const dialogMock = {
+  close: () => {},
+};
 
 @Component({
   selector: 'app-add-company',
@@ -60,7 +63,7 @@ export const MY_FORMATS = {
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
     // { provide: MdDialogRef, useValue: {} }, --> deprecated
     // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
-    {provide: MatDialogRef, useValue: {}},
+    { provide: MatDialogRef, useValue: [] },
     // {provide: MAT_DIALOG_DATA, useValue: []},
   ],
 })
@@ -115,7 +118,7 @@ export class AddCompanyComponent implements OnInit {
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
-    private dialog: MatDialogRef<any, any>,
+    private dialogRef: MatDialogRef<AddCompanyComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -137,17 +140,21 @@ export class AddCompanyComponent implements OnInit {
       createdAt: new FormControl(new Date()),
       empInfo: new FormArray([]),
     });
+  }
+  ngOnInit(): void {
     if (
       this.editCompanyDetails &&
       Object.keys(this.editCompanyDetails)?.length > 0
     ) {
       this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
-      this.empSkillInfo = this.editCompanyDetails['empInfo'][0]['skillInfo'];
-      this.empEduInfo = this.editCompanyDetails['empInfo'][0]['educationInfo'];
+      for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
+        this.empSkillInfo = this.editCompanyDetails['empInfo'][i]['skillInfo'];
+      }
+      for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
+        this.empSkillInfo =
+          this.editCompanyDetails['empInfo'][i]['educationInfo'];
+      }
     }
-  }
-  ngOnInit(): void {
-    // this.addEmployee();
     this.loadEmployee();
     this.employeesInfo();
     if (
@@ -306,7 +313,6 @@ export class AddCompanyComponent implements OnInit {
   }
 
   loadEmployee() {
-    console.log(this.employeeInfoGroup());
     let empGroup: any = [];
 
     if (this.employeeInfoGroup()) {
@@ -410,10 +416,20 @@ export class AddCompanyComponent implements OnInit {
   }
 
   onCloseConfirm() {
-    this.dialog.close(true);
+    if (
+      this.editCompanyDetails &&
+      Object.keys(this.editCompanyDetails)?.length > 0
+    ) {
+      this.dialogRef.close(true);
+    }
   }
 
   onCloseReject() {
-    this.dialog.close(false);
+    if (
+      this.editCompanyDetails &&
+      Object.keys(this.editCompanyDetails)?.length > 0
+    ) {
+      this.dialogRef.close(false);
+    }
   }
 }

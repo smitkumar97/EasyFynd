@@ -98,6 +98,8 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
       })
       .afterClosed()
       .subscribe((result) => {
+        console.log(result);
+        return;
         if (result) {
           this.removeAndUpdateRecord(index);
         } else {
