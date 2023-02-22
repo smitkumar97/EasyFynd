@@ -25,10 +25,7 @@ import {
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
 import { StorageService } from '../services/storage.service';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
@@ -115,7 +112,7 @@ export class AddCompanyComponent implements OnInit {
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
-    private dialogRef: MatDialogRef<any,any>,
+    private dialogRef: MatDialogRef<any, any>,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -146,10 +143,14 @@ export class AddCompanyComponent implements OnInit {
       this.dialogClose = false;
       this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
-        this.empSkillInfo.push(this.editCompanyDetails['empInfo'][i]['skillInfo']);
+        this.empSkillInfo.push(
+          this.editCompanyDetails['empInfo'][i]['skillInfo']
+        );
       }
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
-        this.empEduInfo.push(this.editCompanyDetails['empInfo'][i]['educationInfo'])
+        this.empEduInfo.push(
+          this.editCompanyDetails['empInfo'][i]['educationInfo']
+        );
       }
     }
     this.loadEmployee();
@@ -241,9 +242,7 @@ export class AddCompanyComponent implements OnInit {
     }
   }
 
-  private skillInfoGroup(index=0): any {
-    console.log(this.empSkillInfo);
-
+  private skillInfoGroup(index = 0): any {
     if (this.empSkillInfo.length > 0) {
       let newSkillFormGroup = this.empSkillInfo[index].map((empSkill: any) => {
         let formGroup = new FormGroup({
@@ -273,7 +272,7 @@ export class AddCompanyComponent implements OnInit {
     }
   }
 
-  private educationInfoGroup(index=0): any {
+  private educationInfoGroup(index = 0): any {
     if (this.empEduInfo.length > 0) {
       let newEduFormGroup = this.empEduInfo[index].map((empEdu: any) => {
         let formGroup = new FormGroup({
@@ -315,8 +314,6 @@ export class AddCompanyComponent implements OnInit {
     let empGroup: any = [];
     let isEmpGroup = this.employeeInfoGroup();
     if (isEmpGroup) {
-      console.log('Load Employee');
-
       empGroup = [...isEmpGroup];
     }
 
@@ -418,19 +415,9 @@ export class AddCompanyComponent implements OnInit {
 
   onCloseConfirm() {
     this.dialogRef.close(true);
-    // if (
-    //   this.editCompanyDetails &&
-    //   Object.keys(this.editCompanyDetails)?.length > 0
-    // ) {
-    // }
   }
 
   onCloseReject() {
     this.dialogRef.close(false);
-    // if (
-    //   this.editCompanyDetails &&
-    //   Object.keys(this.editCompanyDetails)?.length > 0
-    // ) {
-    // }
   }
 }
