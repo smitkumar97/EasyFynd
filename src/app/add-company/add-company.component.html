@@ -117,15 +117,15 @@
                   Phone is required
                 </mat-error>
                 <mat-error
-                  class="error"
-                  *ngIf="
-                    formData.get('phone')?.touched &&
-                    formData.get('phone')?.errors &&
-                    formData.get('phone')?.hasError('pattern')
-                  "
-                >
-                  Phone must be 15 characters long
-                </mat-error>
+                class="error"
+                *ngIf="
+                  formData.get('phone')?.touched &&
+                  formData.get('phone')?.errors &&
+                  formData.get('phone')?.hasError('pattern')
+                "
+              >
+                Please enter a valid phone number
+              </mat-error>
                 <mat-icon matSuffix>phone</mat-icon>
               </mat-form-field>
             </div>
@@ -347,7 +347,7 @@
                             ?.hasError('pattern')
                         "
                       >
-                        Phone must be 15 characters long
+                      Please enter a valid phone number
                       </mat-error>
                       <mat-icon matSuffix>phone</mat-icon>
                     </mat-form-field>
@@ -657,7 +657,8 @@
                 style="margin-top: 1rem; margin-bottom: 1rem"
                 (click)="removeEmployee(empIndex)"
               >
-                Remove Employee {{ empIndex + 1 }}
+                Remove Employee
+                <!-- Remove Employee {{ empIndex + 1 }} -->
               </button>
             </div>
           </div>
@@ -673,7 +674,6 @@
               openSnackBar(message, action);
               onSubmit();
               myForm.resetForm();
-              onCloseConfirm()
             "
           >
             Submit
@@ -683,7 +683,7 @@
             mat-raised-button
             color="warn"
             type="button"
-            (click)="onCloseReject()"
+            (click)="onFormCancel()"
           >
             Cancel
           </button>

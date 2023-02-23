@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { MaterialModule } from '../shared/material/material.module';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -7,7 +13,8 @@ import { StorageService } from './../services/storage.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddCompanyComponent } from '../add-company/add-company.component';
 import { DeleteDialogComponent } from '../shared/dialog/delete-dialog/delete-dialog.component';
-
+import { ModalService } from '../services/modal.service';
+import { Subscription, take } from 'rxjs';
 
 export interface UserData {
   id: string;
@@ -25,7 +32,7 @@ export interface UserData {
   styleUrls: ['./home.component.css'],
   providers: [],
 })
-export class HomeComponent implements AfterViewInit, MaterialModule {
+export class HomeComponent implements AfterViewInit, MaterialModule, OnDestroy {
   displayedColumns: string[] = [
     'id',
     'companyName',
@@ -38,14 +45,14 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
   dataSource: MatTableDataSource<UserData>;
   myFormData: any;
   customPaginator: any;
+  public subscription: Subscription = new Subscription();
 
   @ViewChild(MatPaginator) paginator: MatPaginator | any;
   @ViewChild(MatSort) sort: MatSort | any;
-  @Input('mat-dialog-close') dialogResult: any
-
   constructor(
     private storageservice: StorageService,
     private dialog: MatDialog,
+    private modalservice: ModalService
   ) {
     // Assign the data to the data source for the table to render
     this.myFormData = this.storageservice.getData('formData');
@@ -59,6 +66,10 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     this.dataSource = new MatTableDataSource(this.myFormData);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  public ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   ngOnInit() {}
@@ -75,12 +86,11 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     this.customPaginator = event;
   }
 
-  openCompanyFormDialog () {
-    this.dialog
-    .open(AddCompanyComponent, {
+  openCompanyFormDialog() {
+    this.dialog.open(AddCompanyComponent, {
       width: '50vw',
       height: '90vh',
-    })
+    });
   }
 
   removeAndUpdateRecord(index: any) {
@@ -98,16 +108,19 @@ export class HomeComponent implements AfterViewInit, MaterialModule {
     this.dataSource = new MatTableDataSource(this.myFormData);
     this.ngAfterViewInit();
   }
+
   editCompanyDetails(row: any, index: any) {
-    this.dialog
-      .open(AddCompanyComponent, {
-        data: row,
-        width: '50vw',
-        height: '90vh',
-      })
-      .afterClosed()
+    this.dialog.open(AddCompanyComponent, {
+      data: row,
+      width: '50vw',
+      height: '90vh',
+    });
+    this.modalservice
+      .getModalClose()
+      .pipe(take(1))
       .subscribe((result) => {
-        if (result) {
+        console.log('calling using service');
+        if (result === true) {
           this.removeAndUpdateRecord(index);
         } else {
           return;

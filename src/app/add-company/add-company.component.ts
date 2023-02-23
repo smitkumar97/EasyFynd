@@ -4,7 +4,6 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  NgForm,
   Validators,
 } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
@@ -25,7 +24,13 @@ import {
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
 import { StorageService } from '../services/storage.service';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { ModalService } from '../services/modal.service';
+import { Router } from '@angular/router';
 const moment = _rollupMoment || _moment;
 
 export const MY_FORMATS = {
@@ -54,21 +59,19 @@ export const MY_FORMATS = {
 
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
-    // { provide: MdDialogRef, useValue: {} }, --> deprecated
-    // { provide: MatDialogRef, useValue: { editCompanyDetails: []} }
-    // { provide: MatDialogRef, useValue: [] },
-    // { provide: MAT_DIALOG_DATA, useValue: []},
+    { provide: MatDialogRef, useValue: [] },
   ],
 })
 export class AddCompanyComponent implements OnInit {
-  date = new FormControl(moment());
   public formData: FormGroup;
-  // public addskillInfoGroup: FormGroup;
+  date = new FormControl(moment());
   message = 'Form Data Saved Successfully';
   action = 'Done';
   colorControl = new FormControl('primary' as ThemePalette);
   maxDate = new Date();
   companyFormData: string[] = [];
+  newEmployee = false;
+
   @ViewChild('pickerr') datePickerElement = MatDatepicker;
   skillArr = [
     'Java',
@@ -104,15 +107,19 @@ export class AddCompanyComponent implements OnInit {
     'Cloud Specialist',
   ];
 
-  employeesInfoGroup = [];
+  employeesInfoGroup: any = [];
   empSkillInfo: any = [];
   empEduInfo: any = [];
-  dialogClose = true;
+  formSubmit = false;
+
   constructor(
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private storageservice: StorageService,
-    private dialogRef: MatDialogRef<any, any>,
+    private dialog: MatDialog,
+    public dialogRef: MatDialogRef<AddCompanyComponent>,
+    private modalservice: ModalService,
+    private router: Router,
     @Optional() @Inject(MAT_DIALOG_DATA) public editCompanyDetails: any
   ) {
     this.formData = this.fb.group({
@@ -128,8 +135,9 @@ export class AddCompanyComponent implements OnInit {
       ]),
       phone: new FormControl('', [
         Validators.required,
+        Validators.minLength(10),
         Validators.maxLength(15),
-        Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+        Validators.pattern('[1-9][0-9]{9,14}'),
       ]),
       createdAt: new FormControl(new Date()),
       empInfo: new FormArray([]),
@@ -140,8 +148,12 @@ export class AddCompanyComponent implements OnInit {
       this.editCompanyDetails &&
       Object.keys(this.editCompanyDetails)?.length > 0
     ) {
-      this.dialogClose = false;
-      this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
+      this.formSubmit = true;
+      // this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
+      for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
+        this.employeesInfoGroup.push(this.editCompanyDetails['empInfo'][i]);
+      }
+
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
         this.empSkillInfo.push(
           this.editCompanyDetails['empInfo'][i]['skillInfo']
@@ -206,8 +218,9 @@ export class AddCompanyComponent implements OnInit {
             ]),
             empPhone: new FormControl('', [
               Validators.required,
+              Validators.minLength(10),
               Validators.maxLength(15),
-              Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+              Validators.pattern('[1-9][0-9]{9,14}'),
             ]),
             skillInfo: new FormArray([...this.skillInfoGroup(index)]),
             educationInfo: new FormArray([...this.educationInfoGroup(index)]),
@@ -232,8 +245,9 @@ export class AddCompanyComponent implements OnInit {
           ]),
           empPhone: new FormControl('', [
             Validators.required,
+            Validators.minLength(10),
             Validators.maxLength(15),
-            Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+            Validators.pattern('[1-9][0-9]{9,14}'),
           ]),
           skillInfo: new FormArray([...this.skillInfoGroup()]),
           educationInfo: new FormArray([...this.educationInfoGroup()]),
@@ -306,10 +320,6 @@ export class AddCompanyComponent implements OnInit {
     }
   }
 
-  employeesInfo(): FormArray {
-    return this.formData.get('empInfo') as FormArray;
-  }
-
   loadEmployee() {
     let empGroup: any = [];
     let isEmpGroup = this.employeeInfoGroup();
@@ -320,13 +330,15 @@ export class AddCompanyComponent implements OnInit {
     if (empGroup.length === 0) {
       this.addEmployee();
     } else {
-      empGroup.map((s: any) => {
-        this.employeesInfo().push(s);
+      empGroup.map((emp: any, index: any) => {
+        this.employeesInfo().push(emp);
       });
     }
   }
 
   addEmployee() {
+    this.empSkillInfo = [];
+    this.empEduInfo = [];
     this.employeesInfo().push(
       new FormGroup({
         empName: new FormControl('', [
@@ -342,8 +354,9 @@ export class AddCompanyComponent implements OnInit {
         ]),
         empPhone: new FormControl('', [
           Validators.required,
+          Validators.minLength(10),
           Validators.maxLength(15),
-          Validators.pattern('^((\\+91-?)|0)?[0-9]{15}$'),
+          Validators.pattern('[1-9][0-9]{9,14}'),
         ]),
         skillInfo: new FormArray([...this.skillInfoGroup()]),
         educationInfo: new FormArray([...this.educationInfoGroup()]),
@@ -353,6 +366,10 @@ export class AddCompanyComponent implements OnInit {
 
   removeEmployee(empIndex: number) {
     this.employeesInfo().removeAt(empIndex);
+  }
+
+  employeesInfo(): FormArray {
+    return this.formData.get('empInfo') as FormArray;
   }
 
   employeeSkills(empIndex: number): FormArray {
@@ -405,6 +422,11 @@ export class AddCompanyComponent implements OnInit {
     this.companyFormData = this.storageservice.getData('formData');
     this.companyFormData.push(this.formData.value);
     this.storageservice.saveData('formData', this.companyFormData);
+    if (!this.formSubmit) {
+      this.router.navigate(['/home']);
+    } else if (this.formSubmit) {
+      this.onFormSubmit();
+    }
   }
 
   openSnackBar(message: string, action: string) {
@@ -413,11 +435,15 @@ export class AddCompanyComponent implements OnInit {
     });
   }
 
-  onCloseConfirm() {
-    this.dialogRef.close(true);
+  onFormSubmit() {
+    if (this.formSubmit) {
+      this.dialog.closeAll();
+      this.modalservice.onModalClose(true);
+    }
   }
 
-  onCloseReject() {
-    this.dialogRef.close(false);
+  onFormCancel() {
+    this.dialog.closeAll();
+    this.modalservice.onModalClose(false);
   }
 }

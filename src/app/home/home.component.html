@@ -1,11 +1,4 @@
 <div class="table-container">
-      <!-- <button
-      mat-raised-button
-      type="button"
-      color="accent"
-      (click)="openCompanyFormDialog()"
-    >
-    Add Company</button> -->
   <mat-form-field>
     <mat-label>Filter</mat-label>
     <input
@@ -48,12 +41,6 @@
         <td mat-cell *matCellDef="let row">{{ row.createdAt | date }}</td>
       </ng-container>
 
-      <!--Phone Number -->
-      <!-- <ng-container matColumnDef="phone">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone </th>
-        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
-      </ng-container> -->
-
       <!-- Address Column -->
       <ng-container matColumnDef="address">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
@@ -64,7 +51,6 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
         <td mat-cell *matCellDef="let row; let i = index">
-          <!-- <a href="/addcompany" class="nav-link" routerLink="addcompany"> -->
           <button
             mat-icon-button
             color="primary"
@@ -73,7 +59,6 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <!-- </a> -->
           <button
             mat-icon-button
             color="warn"
