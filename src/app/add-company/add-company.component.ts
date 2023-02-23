@@ -149,7 +149,6 @@ export class AddCompanyComponent implements OnInit {
       Object.keys(this.editCompanyDetails)?.length > 0
     ) {
       this.formSubmit = true;
-      // this.employeesInfoGroup = this.editCompanyDetails['empInfo'];
       for (let i = 0; i < this.editCompanyDetails['empInfo'].length; i++) {
         this.employeesInfoGroup.push(this.editCompanyDetails['empInfo'][i]);
       }

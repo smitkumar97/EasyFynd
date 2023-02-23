@@ -10,10 +10,6 @@
   margin-left: 10px;
 }
 
-.form-container {
-  margin: 2% 25%;
-}
-
 mat-card-header {
   padding-bottom: 3px;
 }
@@ -30,4 +26,8 @@ mat-card-header {
 
 .add-button {
   margin-top: 1rem;
+}
+
+.add-company-wrapper {
+  margin: 2% 7%;
 }

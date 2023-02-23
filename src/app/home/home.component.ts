@@ -112,7 +112,7 @@ export class HomeComponent implements AfterViewInit, MaterialModule, OnDestroy {
   editCompanyDetails(row: any, index: any) {
     this.dialog.open(AddCompanyComponent, {
       data: row,
-      width: '50vw',
+      width: '75%',
       height: '90vh',
     });
     this.modalservice
