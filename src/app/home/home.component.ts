@@ -119,7 +119,6 @@ export class HomeComponent implements AfterViewInit, MaterialModule, OnDestroy {
       .getModalClose()
       .pipe(take(1))
       .subscribe((result: any) => {
-        console.log('calling using service');
         if (result === true) {
           this.removeAndUpdateRecord(index);
         } else {
