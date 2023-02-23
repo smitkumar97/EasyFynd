@@ -118,7 +118,7 @@ export class HomeComponent implements AfterViewInit, MaterialModule, OnDestroy {
     this.modalservice
       .getModalClose()
       .pipe(take(1))
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         console.log('calling using service');
         if (result === true) {
           this.removeAndUpdateRecord(index);
@@ -133,7 +133,7 @@ export class HomeComponent implements AfterViewInit, MaterialModule, OnDestroy {
     this.dialog
       .open(DeleteDialogComponent, {})
       .afterClosed()
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         if (result) {
           this.removeAndUpdateRecord(index);
         }
